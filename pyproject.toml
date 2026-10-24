@@ -1,0 +1,18 @@
+[project]
+name = "python-basics"
+version = "0.1.0"
+description = "7 天 Python 基础加固练习"
+requires-python = ">=3.11"
+dependencies = []
+
+[dependency-groups]
+dev = ["pytest>=8.2", "ruff>=0.6"]
+
+[tool.uv]
+# 这不是一个要发布的包，只是一个练习文件夹
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["."]
+python_files = ["test_*.py"]
+addopts = "-q"
