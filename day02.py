@@ -19,7 +19,11 @@ def word_count(text: str) -> dict[str, int]:
     提示：words = text.lower().split()；遍历 words，
           用 dict.get(word, 0) + 1 或者 if word in counts 判断。
     """
-    raise NotImplementedError("TODO: 实现 word_count")
+
+    res = {}
+    for word in text.lower().split():
+        res[word] = res.get(word, 0) + 1
+    return res
 
 
 # ---------------------------------------------------------------- 练习 2
@@ -36,7 +40,7 @@ def top_n(counts: dict[str, int], n: int) -> list[tuple[str, int]]:
     提示：sorted(counts.items(), key=lambda kv: (-kv[1], kv[0])) 一次搞定两个排序条件，
           然后切片 [:n]。注意 n=0 时 [ :0] 正好是空列表。
     """
-    raise NotImplementedError("TODO: 实现 top_n")
+    return sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))[:n]
 
 
 # ---------------------------------------------------------------- 练习 3
@@ -50,6 +54,11 @@ def group_by_len(words: list[str]) -> dict[int, list[str]]:
     提示：result.setdefault(len(word), []).append(word) —— 这一行是今天最值钱的技巧，
           它等价于「如果 key 不存在就先放一个空列表，然后追加」。
     """
+    res = {}
+    for i in words:
+        # res.setdefault(len(i), []).append(i)
+        res[len(i)] = res.get(len(i), []) + [i]
+    return res
     raise NotImplementedError("TODO: 实现 group_by_len")
 
 
