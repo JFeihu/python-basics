@@ -31,7 +31,10 @@ def safe_int(text: str, default: int = 0) -> int:
     提示：try 里写 return int(text)，except ValueError 里写 return default。
           只捕获 ValueError，不要写 except:（那会把键盘中断都吞掉）。
     """
-    raise NotImplementedError("TODO: 实现 safe_int")
+    try:
+        return int(text)
+    except ValueError:
+        return default
 
 
 # ---------------------------------------------------------------- 练习 2
@@ -51,7 +54,14 @@ def read_lines(path: Path) -> list[str]:
                   if line:
                       result.append(line)
     """
-    raise NotImplementedError("TODO: 实现 read_lines")
+
+    result = []
+    with path.open(encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if line:
+                result.append(line)
+    return result
 
 
 # ---------------------------------------------------------------- 练习 3
@@ -69,7 +79,17 @@ def count_words_in_file(path: Path) -> dict[str, int]:
           可以 import day02 里的 word_count 来复用，也可以自己再写一遍。
           先 read_lines 拿到所有行，再用 " ".join(lines) 拼成一段文本。
     """
-    raise NotImplementedError("TODO: 实现 count_words_in_file")
+
+    lines = " ".join(read_lines(path))
+
+    # from day02 import word_count
+    # return word_count(lines)
+
+    result = {}
+    for word in lines.lower().split():
+        result[word] = result.get(word, 0) + 1
+
+    return result
 
 
 # ---------------------------------------------------------------- 练习 4
@@ -93,4 +113,10 @@ def write_report(path: Path, counts: dict[str, int]) -> int:
           排序可以直接用 Day 2 的 top_n(counts, len(counts))。
           写完记得 return 行数（len(counts)）。
     """
-    raise NotImplementedError("TODO: 实现 write_report")
+
+    with path.open("w", encoding="utf-8") as f:
+        res = ""
+        for k, v in sorted(counts.items(), key=lambda x: (-x[1], x[0])):
+            res += f"{k}: {v}\n"
+        f.write(res)
+        return len(counts)
