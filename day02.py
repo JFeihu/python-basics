@@ -6,6 +6,7 @@
 怎么用：读 test_day02.py → 实现下面 6 个函数 → uv run pytest test_day02.py -q -x
 """
 
+
 # ---------------------------------------------------------------- 练习 1
 
 
@@ -55,11 +56,10 @@ def group_by_len(words: list[str]) -> dict[int, list[str]]:
           它等价于「如果 key 不存在就先放一个空列表，然后追加」。
     """
     res = {}
-    for i in words:
-        # res.setdefault(len(i), []).append(i)
-        res[len(i)] = res.get(len(i), []) + [i]
+    for word in words:
+        res.setdefault(len(word), []).append(word)
+        # res[len(word)] = res.get(len(word), []) + [word]
     return res
-    raise NotImplementedError("TODO: 实现 group_by_len")
 
 
 # ---------------------------------------------------------------- 练习 4
@@ -74,7 +74,13 @@ def unique_in_order(items: list[int]) -> list[int]:
     提示：不能直接 list(set(items))，那样顺序会乱。
           用一个 seen = set() 记录见过的，再往 result 里 append。
     """
-    raise NotImplementedError("TODO: 实现 unique_in_order")
+    seen = set(items)
+    result = []
+    for i in items:
+        if i in seen:
+            result.append(i)
+            seen.remove(i)
+    return result
 
 
 # ---------------------------------------------------------------- 练习 5
@@ -87,7 +93,11 @@ def merge_sum(a: dict[str, int], b: dict[str, int]) -> dict[str, int]:
 
     提示：先 result = dict(a) 复制一份，再遍历 b 的 items 往 result 里累加。
     """
-    raise NotImplementedError("TODO: 实现 merge_sum")
+    result = a.copy()
+    for k, v in b.items():
+        result[k] = result.get(k, 0) + v
+
+    return result
 
 
 # ---------------------------------------------------------------- 练习 6
@@ -105,4 +115,7 @@ def most_common_chars(text: str, n: int) -> list[str]:
           再复用你写的 word_count 思路统计每个字符，最后复用 top_n 的排序。
           这题就是在练「把昨天的函数拼起来」。
     """
-    raise NotImplementedError("TODO: 实现 most_common_chars")
+    dic = {}
+    for char in text.lower().replace(" ", ""):
+        dic[char] = dic.get(char, 0) + 1
+    return [x[0] for x in sorted(dic.items(), key=lambda kv: (-kv[1], kv[0]))[:n]]
