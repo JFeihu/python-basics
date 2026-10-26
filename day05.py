@@ -208,8 +208,7 @@ class WordCounter:
     def most_common(self) -> str | None:
         if self.counts == {}:
             return None
-        else:
-            return self.top(1)[0][0]
+        return self.top(1)[0][0]
 
 
 class TodoList:
@@ -228,14 +227,10 @@ class TodoList:
 
     def add(self, title: str) -> int:
         todo_id = len(self._todos) + 1
-        self._todos.append({"id": len(self) + 1, "title": title, "done": False})
+        self._todos.append({"id": todo_id, "title": title, "done": False})
         return todo_id
 
     def complete(self, todo_id: int) -> None:
-        # try:
-        #     self._todos[todo_id - 1]["done"] = True
-        # except:
-        #     raise KeyError
         for todo in self._todos:
             if todo["id"] == todo_id:
                 todo["done"] = True

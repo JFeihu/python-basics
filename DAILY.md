@@ -11,11 +11,11 @@
 | 2 | 字典、集合、排序、去重 | day02.py | ✅ 8 测试 |
 | 3 | 函数：默认参数、*args、**kwargs、闭包、lambda | day03.py | ✅ 8 测试 |
 | 4 | 文件读写、with、编码、异常处理 | day04.py | ✅ 8 测试 |
-| 5 | 类与对象、dataclass、继承 | day05.py | 🔄 进行中（20 测试） |
-| 6 | 模块、导入、标准库（pathlib/json/datetime） | day06.py | ⬜ 待下发 |
+| 5 | 类与对象、dataclass、继承 | day05.py | ✅ 20 测试（`1ed5db0`） |
+| 6 | 模块、导入、标准库（pathlib/json/datetime） | day06.py | 🔄 进行中（12 测试） |
 | 7 | 小综合：命令行记账本 | day07.py | ⬜ 待下发 |
 
-当前累计：**31 个测试全绿**（Day 1~4），Day 5 的 20 个待你实现。
+当前累计：**51 个测试全绿**（Day 1~5）。
 
 ---
 
@@ -141,13 +141,27 @@
 
 ---
 
-## Day 6 · 模块与标准库（预告）
+## Day 6 · 模块与标准库
 
-**预计内容**：`import` 的几种写法、`if __name__ == "__main__"`、`pathlib`、`json`、`datetime`。
+**今天学什么**：`json` 读写、`datetime`/`date` 解析与计算、`pathlib` 遍历与路径拼接、`if __name__ == "__main__"`。
 
-**预计文档**：[6. 模块](https://docs.python.org/zh-cn/3/tutorial/modules.html)、[json](https://docs.python.org/zh-cn/3/library/json.html)、[datetime](https://docs.python.org/zh-cn/3/library/datetime.html)
+**官方文档**
 
-**预计扩展**：绝对导入 vs 相对导入；为什么项目里要分“包”；时区与 UTC（Day 4 的 starter 里已经见过一次）。
+- [6. 模块](https://docs.python.org/zh-cn/3/tutorial/modules.html)：6.1 更多关于模块、**6.4 包**、6.1.1 以脚本方式执行模块（就是 `__main__` 那段）
+- [json](https://docs.python.org/zh-cn/3/library/json.html)：只看 `dumps` / `loads` / `dump` / `load` 四个函数和 `ensure_ascii` 参数
+- [datetime](https://docs.python.org/zh-cn/3/library/datetime.html)：只看 `date`、`datetime`、`timedelta` 三个类，以及 `strftime` / `strptime` 的格式符表
+- [pathlib](https://docs.python.org/zh-cn/3/library/pathlib.html)：只看 `Path`、`/` 运算符、`read_text`/`write_text`、`rglob`、`relative_to`、`as_posix`
+
+**扩展知识**
+
+- **`if __name__ == "__main__":` 的作用**：模块被 `import` 时 `__name__` 是模块名，直接运行时才是 `"__main__"`。用它把"被别人用"和"自己跑"分开，测试才不会误触发
+- **json 只认 6 种类型**：对象、数组、字符串、数字、`true/false`、`null`。`date`、`datetime`、`Decimal`、`set` 都不能直接存，要么转字符串，要么自定义 `default=`
+- **`ensure_ascii=False`**：不写的话中文会变成 `\u5f20\u4e09`，机器能读、人不能
+- **时区**：`datetime.now()` 是"本地时间但不带时区"，`datetime.now(timezone.utc)` 才是明确的 UTC。**存库用 UTC，展示时转本地**（starter 里的 `created_at` 就是 UTC）
+- **`strftime` / `strptime` 记 4 个格式符就够**：`%Y` 年、`%m` 月、`%d` 日、`%H:%M:%S` 时分秒
+- **`Path` 的 `/` 运算符**：`root / "sub" / "a.txt"`，比字符串拼接安全（自动处理分隔符）
+- **`relative_to` + `as_posix()`**：Windows 上是 `sub\a.txt`，`as_posix()` 统一成 `sub/a.txt`，写日志和接口时不会被反斜杠坑
+- **`rglob` 会匹配目录**：`rglob("*.txt")` 可能返回叫 `xxx.txt` 的文件夹，记得 `is_file()` 过滤
 
 ---
 
