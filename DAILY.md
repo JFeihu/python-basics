@@ -1,19 +1,21 @@
 # 每日配套资料
 
 > 约定：每天下发 `test_dayXX.py` 时，同步给出三段——**今天学什么 / 官方文档 / 扩展知识**。
-> 每天 60~90 分钟：文档 25~35 分钟，写题 50 分钟，扩展知识当"睡前读物"，不要求今天全懂。
+> 每天 60~120 分钟，视当天内容而定：文档 25~40 分钟，写题 50~80 分钟，扩展知识当"睡前读物"，不要求当天全懂。
 
 ## 进度总表
 
 | Day | 主题 | 文件 | 状态 |
 | --- | --- | --- | --- |
-| 1 | 字符串、列表、循环、函数入门 | day01.py | ✅ |
-| 2 | 字典、集合、排序、去重 | day02.py | ✅ |
-| 3 | 函数：默认参数、*args、**kwargs、闭包、lambda | day03.py | ✅ |
-| 4 | 文件读写、with、编码、异常处理 | day04.py | 🔄 进行中 |
-| 5 | 类与对象、dataclass | day05.py | ⬜ 待下发 |
+| 1 | 字符串、列表、循环、函数入门 | day01.py | ✅ 7 测试 |
+| 2 | 字典、集合、排序、去重 | day02.py | ✅ 8 测试 |
+| 3 | 函数：默认参数、*args、**kwargs、闭包、lambda | day03.py | ✅ 8 测试 |
+| 4 | 文件读写、with、编码、异常处理 | day04.py | ✅ 8 测试 |
+| 5 | 类与对象、dataclass、继承 | day05.py | 🔄 进行中（20 测试） |
 | 6 | 模块、导入、标准库（pathlib/json/datetime） | day06.py | ⬜ 待下发 |
 | 7 | 小综合：命令行记账本 | day07.py | ⬜ 待下发 |
+
+当前累计：**31 个测试全绿**（Day 1~4），Day 5 的 20 个待你实现。
 
 ---
 
@@ -103,13 +105,39 @@
 
 ---
 
-## Day 5 · 类与对象（预告）
+## Day 5 · 类与对象
 
-**预计内容**：`class`、`__init__`、`self`、属性与方法、继承（了解）、`@dataclass`、`__repr__`/`__eq__`。
+**今天学什么**：`class`、`__init__` 与 `self`、实例属性 vs 类属性、方法、魔术方法（`__repr__`/`__eq__`/`__len__`）、`@dataclass`、继承与重写。
 
-**预计文档**：[9. 类](https://docs.python.org/zh-cn/3/tutorial/classes.html)、[dataclasses](https://docs.python.org/zh-cn/3/library/dataclasses.html)
+**官方文档**
 
-**预计扩展**：为什么 FastAPI 里到处是类（Pydantic 模型、ORM 模型）；`dataclass`  vs 普通类的取舍。
+- [9. 类](https://docs.python.org/zh-cn/3/tutorial/classes.html)：9.1 名称与对象、9.2 作用域（选读）、**9.3 初探类**、9.4 补充说明（重点：类属性 vs 实例属性）、9.5 继承
+- [dataclasses](https://docs.python.org/zh-cn/3/library/dataclasses.html)：只看开头的示例和"自动生成的方法"那段
+- [数据模型 · 特殊方法名](https://docs.python.org/zh-cn/3/reference/datamodel.html#special-method-names)：只查 `__repr__`、`__eq__`、`__len__` 三个
+- 选读：[9.5 继承](https://docs.python.org/zh-cn/3/tutorial/classes.html#inheritance)（今天只要会"重写一个方法"）
+
+**扩展知识**
+
+- **`self` 不是关键字**，只是约定俗成的第一个参数名（写成 `this` 也能跑，但别这么干）
+- **可变类属性的坑**：`class A: items = []` —— 所有实例共享这一个列表，改一个全变。需要每个实例独立，就在 `__init__` 里 `self.items = []`
+- **`@dataclass` 帮你生成 `__init__`/`__repr__`/`__eq__`**，但不会生成 `__hash__`（放进 set 会报错，需要 `frozen=True`）
+- `__repr__` 给开发者看（调试），`__str__` 给用户看（`print`）；只写一个就写 `__repr__`
+- 继承要克制：**组合优于继承**，能"有一个"就别"是一个"
+- 为什么 FastAPI 全是类：`BaseModel` 管**校验**（请求数据对不对），`Base` 管**映射**（表怎么存）——同一个对象两种职责，各自用类封装
+
+---
+
+## Day 5 配套：对照真实代码（20 分钟）
+
+打开 `E:\deepseek\workspace\fastapi-starter`，在下面三个文件里各找一个今天学过的语法点：
+
+| 文件 | 找什么 |
+| --- | --- |
+| `app/schemas/todo.py` | `class TodoCreate(BaseModel)` —— 继承、类属性（字段声明）、`ConfigDict` |
+| `app/db/models.py` | `class User(Base, TimestampMixin)` —— 多继承、`Mapped[...]` 类属性 |
+| `app/core/config.py` | `class Settings(BaseSettings)` —— 继承 + 默认值 + 实例化 `Settings()` |
+
+看完回答一句：**"Pydantic 的 `BaseModel` 和 SQLAlchemy 的 `Base` 都是类，它们分别在干什么？"**
 
 ---
 
