@@ -210,17 +210,35 @@ day07.py
 **目标**：把 `python day07.py` 变成真正的命令：
 
 ```powershell
-uv run book add 100 餐饮 --note 午饭
-uv run book list --month 2026-10
-uv run book total
+python cli.py add 100 餐饮 --date 2026-10-27 --note 午饭
+python cli.py list --month 2026-10
+python cli.py total
+python cli.py remove 3
 ```
 
 **要动的文件**
 
-| 文件 | 改动 |
-| --- | --- |
-| `pyproject.toml` | 加 `[project.scripts]`，把命令名映射到函数 |
-| `cli.py`（新建） | `argparse` 解析参数，调用 `Ledger` |
-| `tests/test_cli.py`（新建） | 用 `subprocess` 或直接调函数测试命令 |
+| 文件 | 改动 | 状态 |
+| --- | --- | --- |
+| `cli.py`（新建） | `argparse` 解析参数，调用 `Ledger` | 已给：`build_parser` / `cmd_add` / `cmd_remove`；TODO：`cmd_list` / `cmd_total` |
+| `test_cli.py`（新建） | 直接调 `main([...])`，不启进程 | 已给，7 个测试 |
 
-**官方文档**：[argparse 示例](https://docs.python.org/zh-cn/3/library/argparse.html#example)、[setuptools 入口点](https://setuptools.pypa.io/en/latest/userguide/entry_point.html)
+**为什么不用 `uv run book`**：那需要把项目打成可安装的包（`[project.scripts]` + build backend）。练习项目里用 PowerShell 别名达到同样效果：
+
+```powershell
+# 加到 $PROFILE 里，之后任何目录都能用
+function book { uv run python E:\deepseek\workspace\python-basics\cli.py @args }
+```
+
+**官方文档**
+
+- [argparse 示例](https://docs.python.org/zh-cn/3/library/argparse.html#example)：看完那个 `prog.py` 的例子就够了
+- [argparse 子命令](https://docs.python.org/zh-cn/3/library/argparse.html#sub-commands)：`add_subparsers` 那段
+- 想了解真正的入口点：[setuptools entry points](https://setuptools.pypa.io/en/latest/userguide/entry_point.html)（选读）
+
+**扩展知识**
+
+- **退出码是给脚本用的**：`sys.exit(0)` 成功、非 0 失败。`$LASTEXITCODE` / `echo $?` 靠它判断，CI 也靠它
+- **`stderr` 和 `stdout` 要分开**：错误信息走 `stderr`，正常输出走 `stdout`，否则管道处理时会混在一起
+- **`--help` 是免费的**：argparse 自动生成，参数写清楚 `help=` 就等于写了文档
+- **薄壳原则**：命令行层不写业务逻辑，只做「解析 → 调用 → 展示」，和 FastAPI 的路由层一模一样
