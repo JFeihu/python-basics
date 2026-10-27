@@ -109,10 +109,8 @@ def list_files_by_suffix(root: Path, suffix: str) -> list[str]:
     """
 
     p = [
-        i.relative_to(root).as_posix()
-         for i in root.rglob(f"*{suffix}")
-         if i.is_file()
-         ]
+        i.relative_to(root).as_posix() for i in root.rglob(f"*{suffix}") if i.is_file()
+    ]
     res = sorted(p)
     return res
 

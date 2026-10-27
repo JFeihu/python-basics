@@ -13,9 +13,9 @@
 | 4 | 文件读写、with、编码、异常处理 | day04.py | ✅ 8 测试 |
 | 5 | 类与对象、dataclass、继承 | day05.py | ✅ 20 测试（`1ed5db0`） |
 | 6 | 模块、导入、标准库（pathlib/json/datetime） | day06.py | 🔄 进行中（12 测试） |
-| 7 | 小综合：命令行记账本 | day07.py | ⬜ 待下发 |
+| 7 | 小综合：命令行记账本（7A 核心类 + 7B CLI） | day07.py | 🔄 进行中（15 测试） |
 
-当前累计：**51 个测试全绿**（Day 1~5）。
+当前累计：**63 个测试全绿**（Day 1~6），Day 7 的 15 个待你实现。
 
 ---
 
@@ -165,8 +165,62 @@
 
 ---
 
-## Day 7 · 小综合（预告）
+## Day 7 · 小综合：命令行记账本
 
-**预计内容**：命令行记账本——读 JSON 文件、增删记录、统计汇总、异常兜底。把 Day 1~6 全部用一遍。
+分两段：**7A 核心类**（今天上午）、**7B 命令行入口**（下午）。
 
-**预计文档**： argparse（[教程](https://docs.python.org/zh-cn/3/library/argparse.html)）、json（同上）
+**今天学什么**：把前六天串成一个能用的工具——类封装状态 + JSON 持久化 + 日期处理 + 异常兜底 + 模块复用。
+
+**结构**
+
+```text
+day07.py
+├── class Ledger            # 7A：核心数据层（8 个方法）
+│   ├── __init__(path)      # 加载或初始化
+│   ├── save()              # 落盘
+│   ├── records()           # 返回副本
+│   ├── add(...)            # 校验 + 生成 id + 保存
+│   ├── find(month, category)
+│   ├── total(month)
+│   ├── by_category()
+│   └── remove(record_id)
+└── if __name__ == "__main__":   # 已写好，用来演示
+```
+
+**官方文档**
+
+- [json](https://docs.python.org/zh-cn/3/library/json.html)：`dumps` 的 `ensure_ascii` / `indent`
+- [pathlib 基础](https://docs.python.org/zh-cn/3/library/pathlib.html#basic-use)：`exists` / `read_text` / `write_text`
+- [argparse](https://docs.python.org/zh-cn/3/library/argparse.html)（7B 用）：只看"示例"那一节，够用了
+- 复习自己的 `day06.py`：今天要 `import parse_date`
+
+**扩展知识**
+
+- **自动保存 vs 手动保存**：前者方便（改完就落盘），后者可控（批量改一次写）；选哪种要在文档里写清楚
+- **原子写入**：先写 `.tmp` 再 `replace()`，避免写到一半崩溃导致文件损坏
+- **金额别用 float**：`0.1 + 0.2 != 0.3`；真实系统用 `Decimal` 或以"分"为单位的整数
+- **`max(..., default=0)`**：空列表调 `max()` 会抛异常，`default` 是给空账本兜底的
+- **返回副本**：`[dict(r) for r in self._records]`，防止外部改坏内部数据（Day 4 的别名问题）
+- **ERROR vs FAILED**：ERROR 是 fixture/导入/语法崩了，FAILED 是断言不通过，排查方向不同
+
+---
+
+## Day 7B · 命令行入口（下午）
+
+**目标**：把 `python day07.py` 变成真正的命令：
+
+```powershell
+uv run book add 100 餐饮 --note 午饭
+uv run book list --month 2026-10
+uv run book total
+```
+
+**要动的文件**
+
+| 文件 | 改动 |
+| --- | --- |
+| `pyproject.toml` | 加 `[project.scripts]`，把命令名映射到函数 |
+| `cli.py`（新建） | `argparse` 解析参数，调用 `Ledger` |
+| `tests/test_cli.py`（新建） | 用 `subprocess` 或直接调函数测试命令 |
+
+**官方文档**：[argparse 示例](https://docs.python.org/zh-cn/3/library/argparse.html#example)、[setuptools 入口点](https://setuptools.pypa.io/en/latest/userguide/entry_point.html)
