@@ -13,9 +13,10 @@
 | 4 | 文件读写、with、编码、异常处理 | day04.py | ✅ 8 测试 |
 | 5 | 类与对象、dataclass、继承 | day05.py | ✅ 20 测试（`1ed5db0`） |
 | 6 | 模块、导入、标准库（pathlib/json/datetime） | day06.py | 🔄 进行中（12 测试） |
-| 7 | 小综合：命令行记账本（7A 核心类 + 7B CLI） | day07.py | 🔄 进行中（15 测试） |
+| 7 | 小综合：命令行记账本（7A 核心类 + 7B CLI） | day07.py / cli.py | ✅ 22 测试 |
+| 8 | **W1 进阶**：装饰器 / 迭代器 / 生成器 | day08.py | 🔄 进行中（17 测试） |
 
-当前累计：**63 个测试全绿**（Day 1~6），Day 7 的 15 个待你实现。
+当前累计：**85 个测试全绿**（Day 1~7），Day 8 的 17 个待你实现。
 
 ---
 
@@ -242,3 +243,37 @@ function book { uv run python E:\deepseek\workspace\python-basics\cli.py @args }
 - **`stderr` 和 `stdout` 要分开**：错误信息走 `stderr`，正常输出走 `stdout`，否则管道处理时会混在一起
 - **`--help` 是免费的**：argparse 自动生成，参数写清楚 `help=` 就等于写了文档
 - **薄壳原则**：命令行层不写业务逻辑，只做「解析 → 调用 → 展示」，和 FastAPI 的路由层一模一样
+
+---
+
+## Day 8 · W1 进阶：装饰器 / 迭代器 / 生成器
+
+**今天学什么**：`@functools.wraps` 装饰器、带参装饰器（三层结构）、`__iter__`/`__next__` 迭代协议、`yield` 生成器、无限序列。
+
+**三者的关系（先记住这张图）**
+
+```
+迭代协议  __iter__ / __next__     →  for 循环到底在调什么
+    ↑ 自动实现
+生成器  yield                      →  写起来简单 10 倍的迭代器
+装饰器  func → wrapper             →  在函数外面套一层，不改原函数
+```
+
+**官方文档**
+
+- [9.8 迭代器](https://docs.python.org/zh-cn/3/tutorial/classes.html#iterators)：`__iter__` / `__next__` / `StopIteration`
+- [9.9 生成器](https://docs.python.org/zh-cn/3/tutorial/classes.html#generators)
+- [9.10 生成器表达式](https://docs.python.org/zh-cn/3/tutorial/classes.html#generator-expressions)
+- [functools.wraps](https://docs.python.org/zh-cn/3/library/functools.html#functools.wraps)：装饰器必配
+- [itertools.islice](https://docs.python.org/zh-cn/3/library/itertools.html#itertools.islice)：从无限生成器里取前 n 个
+- 选读：[9.7 函数定义详解 · 装饰器](https://docs.python.org/zh-cn/3/glossary.html#term-decorator)（术语表）
+
+**扩展知识**
+
+- **`functools.wraps` 不加会怎样**：`slow.__name__` 变成 `"wrapper"`，日志、文档、调试都会失真
+- **带参装饰器的三层**：`retry(times=3)(func)` —— 第一层收参数，第二层收函数，第三层是真正调用的
+- **生成器只能消费一次**：`list(g)` 之后再 `list(g)` 是空的；需要重复用就转成 list 或重新创建
+- **`yield from`**：把另一个可迭代对象逐个产出，等价于 `for x in y: yield x`
+- **生成器的延迟执行**：`with open(...)` 在生成器里会一直开着，直到耗尽——所以别长期不消费
+- **无限生成器不能 `list()`**：必须配 `take()` / `islice()` 限量
+- **迭代器 vs 可迭代对象**：list 是"可迭代对象"（能 `iter()`），但它不是迭代器；`iter(list)` 返回的才是

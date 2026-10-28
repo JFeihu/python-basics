@@ -122,7 +122,55 @@ git push
 
 ---
 
-## 七、每天要查的两个网址
+## 七、argparse 模板（写新命令时照着抄）
+
+**只有 4 个概念**：`ArgumentParser`（解析器）、`add_argument`（声明参数）、`add_subparsers`（子命令）、`parse_args`（拿到结果）。
+
+```python
+import argparse
+import sys
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(prog="mytool", description="一句话说明")
+    # 全局参数：要写在子命令前面
+    parser.add_argument("--file", default="data.json", help="数据文件")
+
+    sub = parser.add_subparsers(dest="command", required=True)
+
+    p_new = sub.add_parser("new", help="新建")
+    p_new.add_argument("name")  # 位置参数（必填）
+    p_new.add_argument("--count", type=int, default=1)  # 可选参数
+
+    p_show = sub.add_parser("show", help="查看")
+    p_show.add_argument("--all", action="store_true")  # 开关（True/False）
+    return parser
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = build_parser().parse_args(argv)
+    print(args)  # 先打印看看解析成了什么
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+```
+
+| 你想要 | 写法 |
+| --- | --- |
+| 必填的位置参数 | `add_argument("name")` |
+| 可选参数带默认值 | `add_argument("--count", type=int, default=1)` |
+| 布尔开关 | `add_argument("--all", action="store_true")` |
+| 子命令（git add / git commit） | `sub.add_parser("add")` |
+| 参数帮助文字 | `help="..."`（自动生成 `--help`） |
+| 参数值非法自动报错 | `type=int` / `type=float` |
+
+**不用背**：写新命令时打开这个模板，改名字就行。`--help` 会自动生成，看输出就知道解析对不对。
+
+---
+
+## 八、每天要查的两个网址
 
 - Python 中文文档：<https://docs.python.org/zh-cn/3/>
 - 那天的资料：`DAILY.md`（今天学什么 / 官方文档 / 扩展知识）
